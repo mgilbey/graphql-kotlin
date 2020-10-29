@@ -83,4 +83,18 @@ class SimpleQuery : Query {
         Selection.ONE -> "You chose the first one"
         Selection.TWO -> "You chose the second one"
     }
+
+    @GraphQLDescription("Field with an interface return type, and ignored implementation type")
+    fun interfaceReturnType(): InterfaceSuperType = IgnoredImplementingClass()
+
+    @GraphQLDescription("Simple interface")
+    interface InterfaceSuperType {
+        val fieldFromInterface: String
+    }
+
+    @GraphQLIgnore
+    @GraphQLDescription("Implementation of an interface that is ignored")
+    class IgnoredImplementingClass: InterfaceSuperType {
+        override val fieldFromInterface = "implementingClassString"
+    }
 }
