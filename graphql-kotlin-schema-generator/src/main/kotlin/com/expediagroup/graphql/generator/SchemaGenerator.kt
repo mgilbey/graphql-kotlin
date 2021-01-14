@@ -19,6 +19,7 @@ package com.expediagroup.graphql.generator
 import com.expediagroup.graphql.SchemaGeneratorConfig
 import com.expediagroup.graphql.TopLevelObject
 import com.expediagroup.graphql.exceptions.InvalidPackagesException
+import com.expediagroup.graphql.execution.GraphQLContext
 import com.expediagroup.graphql.generator.state.AdditionalType
 import com.expediagroup.graphql.generator.state.ClassScanner
 import com.expediagroup.graphql.generator.state.TypesCache
@@ -47,7 +48,7 @@ import kotlin.reflect.full.createType
  * This class should be used from a try-with-resouces block
  * or another closable object as the internals can take up a lot of resources.
 */
-open class SchemaGenerator(internal val config: SchemaGeneratorConfig) : Closeable {
+open class SchemaGenerator<out Context: GraphQLContext>(internal val config: SchemaGeneratorConfig) : Closeable {
 
     internal val additionalTypes: MutableSet<AdditionalType> = mutableSetOf()
     internal val classScanner = ClassScanner(config.supportedPackages)
@@ -68,9 +69,9 @@ open class SchemaGenerator(internal val config: SchemaGeneratorConfig) : Closeab
      * Generate a schema given a list of objects to parse for the queries, mutations, and subscriptions.
      */
     open fun generateSchema(
-        queries: List<TopLevelObject>,
-        mutations: List<TopLevelObject> = emptyList(),
-        subscriptions: List<TopLevelObject> = emptyList(),
+        queries: List<TopLevelObject<Context>>,
+        mutations: List<TopLevelObject<Context>> = emptyList(),
+        subscriptions: List<TopLevelObject<Context>> = emptyList(),
         additionalTypes: Set<KType> = emptySet(),
         additionalInputTypes: Set<KType> = emptySet()
     ): GraphQLSchema {

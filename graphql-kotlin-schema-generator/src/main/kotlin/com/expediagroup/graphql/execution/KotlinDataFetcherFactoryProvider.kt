@@ -37,7 +37,7 @@ interface KotlinDataFetcherFactoryProvider {
      * retrieved during data fetcher execution from [graphql.schema.DataFetchingEnvironment]
      * @param kFunction Kotlin function being invoked
      */
-    fun functionDataFetcherFactory(target: Any?, kFunction: KFunction<*>): DataFetcherFactory<Any?>
+    fun <Context: GraphQLContext>functionDataFetcherFactory(target: (context: Context) -> Any?, kFunction: KFunction<*>): DataFetcherFactory<Any?>
 
     /**
      * Retrieve an instance of [DataFetcherFactory] that will be used to resolve target property.
@@ -56,7 +56,7 @@ open class SimpleKotlinDataFetcherFactoryProvider(
     private val objectMapper: ObjectMapper = jacksonObjectMapper()
 ) : KotlinDataFetcherFactoryProvider {
 
-    override fun functionDataFetcherFactory(target: Any?, kFunction: KFunction<*>) = DataFetcherFactory {
+    override fun <Context : GraphQLContext>functionDataFetcherFactory(target: (context: Context) -> Any?, kFunction: KFunction<*>) = DataFetcherFactory {
         FunctionDataFetcher(
             target = target,
             fn = kFunction,

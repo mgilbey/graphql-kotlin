@@ -19,13 +19,14 @@ package com.expediagroup.graphql.generator.types
 import com.expediagroup.graphql.TopLevelObject
 import com.expediagroup.graphql.exceptions.ConflictingFieldsException
 import com.expediagroup.graphql.exceptions.InvalidQueryTypeException
+import com.expediagroup.graphql.execution.GraphQLContext
 import com.expediagroup.graphql.generator.SchemaGenerator
 import com.expediagroup.graphql.generator.extensions.getValidFunctions
 import com.expediagroup.graphql.generator.extensions.isNotPublic
 import graphql.introspection.Introspection.DirectiveLocation
 import graphql.schema.GraphQLObjectType
 
-internal fun generateQueries(generator: SchemaGenerator, queries: List<TopLevelObject>): GraphQLObjectType {
+internal fun <Context: GraphQLContext> generateQueries(generator: SchemaGenerator<Context>, queries: List<TopLevelObject<Context>>): GraphQLObjectType {
     val queryBuilder = GraphQLObjectType.Builder()
     queryBuilder.name(generator.config.topLevelNames.query)
 
@@ -40,7 +41,7 @@ internal fun generateQueries(generator: SchemaGenerator, queries: List<TopLevelO
 
         query.kClass.getValidFunctions(generator.config.hooks)
             .forEach {
-                val function = generateFunction(generator, it, generator.config.topLevelNames.query, query.obj)
+                val function = generateFunction(generator, it, generator.config.topLevelNames.query, query::getTarget)
                 val functionFromHook = generator.config.hooks.didGenerateQueryField(query.kClass, it, function)
                 if (queryBuilder.hasField(functionFromHook.name)) {
                     throw ConflictingFieldsException("Query(class: ${query.kClass})", it.name)

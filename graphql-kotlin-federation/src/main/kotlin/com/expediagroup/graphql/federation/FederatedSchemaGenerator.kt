@@ -17,6 +17,7 @@
 package com.expediagroup.graphql.federation
 
 import com.expediagroup.graphql.TopLevelObject
+import com.expediagroup.graphql.execution.GraphQLContext
 import com.expediagroup.graphql.federation.directives.ExtendsDirective
 import com.expediagroup.graphql.generator.SchemaGenerator
 import graphql.schema.GraphQLSchema
@@ -25,16 +26,16 @@ import kotlin.reflect.KType
 /**
  * Generates federated GraphQL schemas based on the specified configuration.
  */
-open class FederatedSchemaGenerator(generatorConfig: FederatedSchemaGeneratorConfig) : SchemaGenerator(generatorConfig) {
+open class FederatedSchemaGenerator<Context : GraphQLContext>(generatorConfig: FederatedSchemaGeneratorConfig) : SchemaGenerator<Context>(generatorConfig) {
 
     /**
      * Scans specified packages for all the federated (extended) types and adds them to the schema additional types,
      * then it generates the schema as usual using the [FederatedSchemaGeneratorConfig].
      */
     override fun generateSchema(
-        queries: List<TopLevelObject>,
-        mutations: List<TopLevelObject>,
-        subscriptions: List<TopLevelObject>,
+        queries: List<TopLevelObject<Context>>,
+        mutations: List<TopLevelObject<Context>>,
+        subscriptions: List<TopLevelObject<Context>>,
         additionalTypes: Set<KType>,
         additionalInputTypes: Set<KType>
     ): GraphQLSchema {

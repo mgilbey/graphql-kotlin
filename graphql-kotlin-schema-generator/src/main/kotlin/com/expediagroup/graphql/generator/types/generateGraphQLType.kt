@@ -16,6 +16,7 @@
 
 package com.expediagroup.graphql.generator.types
 
+import com.expediagroup.graphql.execution.GraphQLContext
 import com.expediagroup.graphql.extensions.unwrapType
 import com.expediagroup.graphql.generator.SchemaGenerator
 import com.expediagroup.graphql.generator.extensions.getKClass
@@ -33,7 +34,7 @@ import kotlin.reflect.KType
 /**
  * Return a basic GraphQL type given all the information about the kotlin type.
  */
-internal fun generateGraphQLType(generator: SchemaGenerator, type: KType, inputType: Boolean = false): GraphQLType {
+internal fun <Context : GraphQLContext>generateGraphQLType(generator: SchemaGenerator<Context>, type: KType, inputType: Boolean = false): GraphQLType {
     val hookGraphQLType = generator.config.hooks.willGenerateGraphQLType(type)
     val graphQLType = hookGraphQLType
         ?: generateScalar(generator, type)
@@ -49,7 +50,7 @@ internal fun generateGraphQLType(generator: SchemaGenerator, type: KType, inputT
     return typeWithNullability
 }
 
-private fun objectFromReflection(generator: SchemaGenerator, type: KType, inputType: Boolean): GraphQLType {
+private fun <Context : GraphQLContext>objectFromReflection(generator: SchemaGenerator<Context>, type: KType, inputType: Boolean): GraphQLType {
     val cacheKey = TypesCacheKey(type, inputType)
     val cachedType = generator.cache.get(cacheKey)
 
@@ -65,7 +66,7 @@ private fun objectFromReflection(generator: SchemaGenerator, type: KType, inputT
     }
 }
 
-private fun getGraphQLType(generator: SchemaGenerator, kClass: KClass<*>, inputType: Boolean, type: KType): GraphQLType = when {
+private fun <Context : GraphQLContext>getGraphQLType(generator: SchemaGenerator<Context>, kClass: KClass<*>, inputType: Boolean, type: KType): GraphQLType = when {
     kClass.isEnum() -> @Suppress("UNCHECKED_CAST") (generateEnum(generator, kClass as KClass<Enum<*>>))
     kClass.isListType() -> generateList(generator, type, inputType)
     kClass.isUnion() -> generateUnion(generator, kClass)

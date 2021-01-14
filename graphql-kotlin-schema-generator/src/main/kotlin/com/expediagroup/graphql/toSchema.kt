@@ -17,6 +17,7 @@
 package com.expediagroup.graphql
 
 import com.expediagroup.graphql.exceptions.GraphQLKotlinException
+import com.expediagroup.graphql.execution.GraphQLContext
 import com.expediagroup.graphql.generator.SchemaGenerator
 import graphql.schema.GraphQLSchema
 
@@ -31,13 +32,13 @@ import graphql.schema.GraphQLSchema
  * @return GraphQLSchema from graphql-java
  */
 @Throws(GraphQLKotlinException::class)
-fun toSchema(
+fun <Context: GraphQLContext>toSchema(
     config: SchemaGeneratorConfig,
-    queries: List<TopLevelObject>,
-    mutations: List<TopLevelObject> = emptyList(),
-    subscriptions: List<TopLevelObject> = emptyList()
+    queries: List<TopLevelObject<Context>>,
+    mutations: List<TopLevelObject<Context>> = emptyList(),
+    subscriptions: List<TopLevelObject<Context>> = emptyList()
 ): GraphQLSchema {
-    val generator = SchemaGenerator(config)
+    val generator = SchemaGenerator<Context>(config)
     return generator.use {
         it.generateSchema(queries, mutations, subscriptions)
     }

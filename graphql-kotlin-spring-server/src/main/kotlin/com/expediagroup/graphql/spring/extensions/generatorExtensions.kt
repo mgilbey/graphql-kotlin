@@ -17,7 +17,7 @@
 package com.expediagroup.graphql.spring.extensions
 
 import com.expediagroup.graphql.TopLevelObject
-import org.springframework.aop.framework.Advised
+import com.expediagroup.graphql.execution.GraphQLContext
 import org.springframework.aop.support.AopUtils
 
 /**
@@ -25,10 +25,5 @@ import org.springframework.aop.support.AopUtils
  * the schema generator can use
  */
 internal fun List<Any>.toTopLevelObjects() = this.map {
-    val klazz = if (AopUtils.isAopProxy(it) && it is Advised) {
-        it.targetSource.target!!::class
-    } else {
-        it::class
-    }
-    TopLevelObject(it, klazz)
+    TopLevelObject<GraphQLContext>(it, AopUtils.getTargetClass(it).kotlin)
 }

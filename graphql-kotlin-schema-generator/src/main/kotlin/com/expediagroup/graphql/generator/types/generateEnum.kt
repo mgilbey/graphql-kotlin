@@ -17,6 +17,7 @@
 package com.expediagroup.graphql.generator.types
 
 import com.expediagroup.graphql.directives.deprecatedDirectiveWithReason
+import com.expediagroup.graphql.execution.GraphQLContext
 import com.expediagroup.graphql.generator.SchemaGenerator
 import com.expediagroup.graphql.generator.extensions.getDeprecationReason
 import com.expediagroup.graphql.generator.extensions.getGraphQLDescription
@@ -28,7 +29,7 @@ import graphql.schema.GraphQLEnumType
 import graphql.schema.GraphQLEnumValueDefinition
 import kotlin.reflect.KClass
 
-internal fun generateEnum(generator: SchemaGenerator, kClass: KClass<out Enum<*>>): GraphQLEnumType {
+internal fun <Context : GraphQLContext>generateEnum(generator: SchemaGenerator<Context>, kClass: KClass<out Enum<*>>): GraphQLEnumType {
     val enumBuilder = GraphQLEnumType.newEnum()
 
     enumBuilder.name(kClass.getSimpleName())
@@ -44,7 +45,7 @@ internal fun generateEnum(generator: SchemaGenerator, kClass: KClass<out Enum<*>
     return generator.config.hooks.onRewireGraphQLType(enumBuilder.build()).safeCast()
 }
 
-private fun getEnumValueDefinition(generator: SchemaGenerator, enum: Enum<*>, kClass: KClass<out Enum<*>>): GraphQLEnumValueDefinition {
+private fun <Context : GraphQLContext>getEnumValueDefinition(generator: SchemaGenerator<Context>, enum: Enum<*>, kClass: KClass<out Enum<*>>): GraphQLEnumValueDefinition {
     val valueBuilder = GraphQLEnumValueDefinition.newEnumValueDefinition()
     val valueField = kClass.java.getField(enum.name)
 

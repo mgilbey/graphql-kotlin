@@ -17,6 +17,7 @@
 package com.expediagroup.graphql.generator.types
 
 import com.expediagroup.graphql.directives.deprecatedDirectiveWithReason
+import com.expediagroup.graphql.execution.GraphQLContext
 import com.expediagroup.graphql.generator.SchemaGenerator
 import com.expediagroup.graphql.generator.extensions.getDeprecationReason
 import com.expediagroup.graphql.generator.extensions.getFunctionName
@@ -30,7 +31,7 @@ import graphql.schema.GraphQLFieldDefinition
 import graphql.schema.GraphQLOutputType
 import kotlin.reflect.KFunction
 
-internal fun generateFunction(generator: SchemaGenerator, fn: KFunction<*>, parentName: String, target: Any? = null, abstract: Boolean = false): GraphQLFieldDefinition {
+internal fun <Context : GraphQLContext>generateFunction(generator: SchemaGenerator<Context>, fn: KFunction<*>, parentName: String, target: (context: Context) -> Any? = { null }, abstract: Boolean = false): GraphQLFieldDefinition {
     val builder = GraphQLFieldDefinition.newFieldDefinition()
     val functionName = fn.getFunctionName()
     builder.name(functionName)

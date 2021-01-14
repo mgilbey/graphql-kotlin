@@ -49,8 +49,8 @@ import kotlin.reflect.full.valueParameters
  * @param objectMapper Jackson ObjectMapper that will be used to deserialize environment arguments to the expected function arguments
  */
 @Suppress("Detekt.SpreadOperator")
-open class FunctionDataFetcher(
-    private val target: Any?,
+open class FunctionDataFetcher<Context : GraphQLContext>(
+    private val target: (context: Context) -> Any?,
     private val fn: KFunction<*>,
     private val objectMapper: ObjectMapper = jacksonObjectMapper()
 ) : DataFetcher<Any?> {
@@ -59,7 +59,8 @@ open class FunctionDataFetcher(
      * Invoke a suspend function or blocking function, passing in the [target] if not null or default to using the source from the environment.
      */
     override fun get(environment: DataFetchingEnvironment): Any? {
-        val instance = target ?: environment.getSource<Any?>()
+        val context = environment.getContext<Context>()
+        val instance = target(context) ?: environment.getSource<Any?>()
         val instanceParameter = fn.instanceParameter
 
         return if (instance != null && instanceParameter != null) {

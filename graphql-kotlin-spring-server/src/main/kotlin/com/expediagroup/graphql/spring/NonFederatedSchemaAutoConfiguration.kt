@@ -18,6 +18,7 @@ package com.expediagroup.graphql.spring
 
 import com.expediagroup.graphql.SchemaGeneratorConfig
 import com.expediagroup.graphql.TopLevelNames
+import com.expediagroup.graphql.execution.GraphQLContext
 import com.expediagroup.graphql.execution.KotlinDataFetcherFactoryProvider
 import com.expediagroup.graphql.extensions.print
 import com.expediagroup.graphql.hooks.NoopSchemaGeneratorHooks
@@ -26,6 +27,7 @@ import com.expediagroup.graphql.spring.extensions.toTopLevelObjects
 import com.expediagroup.graphql.server.operations.Mutation
 import com.expediagroup.graphql.server.operations.Query
 import com.expediagroup.graphql.server.operations.Subscription
+import com.expediagroup.graphql.spring.registration.QueryRegistration
 import com.expediagroup.graphql.toSchema
 import graphql.schema.GraphQLSchema
 import org.slf4j.LoggerFactory
@@ -69,13 +71,14 @@ class NonFederatedSchemaAutoConfiguration {
     @ConditionalOnMissingBean
     fun schema(
         queries: Optional<List<Query>>,
+        queryRegistrations: Optional<List<QueryRegistration<*, *>>>,
         mutations: Optional<List<Mutation>>,
         subscriptions: Optional<List<Subscription>>,
         schemaConfig: SchemaGeneratorConfig
     ): GraphQLSchema {
         val schema = toSchema(
             config = schemaConfig,
-            queries = queries.orElse(emptyList()).toTopLevelObjects(),
+            queries = queries.orElse(emptyList()).toTopLevelObjects() + queryRegistrations.orElse(emptyList()).map { it.toTopLeveLObject() },
             mutations = mutations.orElse(emptyList()).toTopLevelObjects(),
             subscriptions = subscriptions.orElse(emptyList()).toTopLevelObjects()
         )

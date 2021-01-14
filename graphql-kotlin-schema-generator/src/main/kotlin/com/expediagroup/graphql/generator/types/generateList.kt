@@ -16,12 +16,13 @@
 
 package com.expediagroup.graphql.generator.types
 
+import com.expediagroup.graphql.execution.GraphQLContext
 import com.expediagroup.graphql.generator.SchemaGenerator
 import com.expediagroup.graphql.generator.extensions.getWrappedType
 import graphql.schema.GraphQLList
 import kotlin.reflect.KType
 
-internal fun generateList(generator: SchemaGenerator, type: KType, inputType: Boolean): GraphQLList {
+internal fun <Context : GraphQLContext>generateList(generator: SchemaGenerator<Context>, type: KType, inputType: Boolean): GraphQLList {
     val wrappedType = generateGraphQLType(generator, type.getWrappedType(), inputType)
     return GraphQLList.list(wrappedType)
 }

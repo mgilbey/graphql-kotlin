@@ -19,13 +19,14 @@ package com.expediagroup.graphql.generator.types
 import com.expediagroup.graphql.TopLevelObject
 import com.expediagroup.graphql.exceptions.ConflictingFieldsException
 import com.expediagroup.graphql.exceptions.InvalidMutationTypeException
+import com.expediagroup.graphql.execution.GraphQLContext
 import com.expediagroup.graphql.generator.SchemaGenerator
 import com.expediagroup.graphql.generator.extensions.getValidFunctions
 import com.expediagroup.graphql.generator.extensions.isNotPublic
 import graphql.introspection.Introspection.DirectiveLocation
 import graphql.schema.GraphQLObjectType
 
-internal fun generateMutations(generator: SchemaGenerator, mutations: List<TopLevelObject>): GraphQLObjectType? {
+internal fun <Context : GraphQLContext>generateMutations(generator: SchemaGenerator<Context>, mutations: List<TopLevelObject<Context>>): GraphQLObjectType? {
 
     if (mutations.isEmpty()) {
         return null
@@ -45,7 +46,7 @@ internal fun generateMutations(generator: SchemaGenerator, mutations: List<TopLe
 
         mutation.kClass.getValidFunctions(generator.config.hooks)
             .forEach {
-                val function = generateFunction(generator, it, generator.config.topLevelNames.mutation, mutation.obj)
+                val function = generateFunction(generator, it, generator.config.topLevelNames.mutation, mutation::getTarget)
                 val functionFromHook = generator.config.hooks.didGenerateMutationField(mutation.kClass, it, function)
                 if (mutationBuilder.hasField(functionFromHook.name)) {
                     throw ConflictingFieldsException("Mutation(class: ${mutation.kClass})", it.name)

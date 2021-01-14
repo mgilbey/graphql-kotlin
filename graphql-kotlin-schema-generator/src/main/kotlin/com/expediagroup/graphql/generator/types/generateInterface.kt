@@ -16,6 +16,7 @@
 
 package com.expediagroup.graphql.generator.types
 
+import com.expediagroup.graphql.execution.GraphQLContext
 import com.expediagroup.graphql.extensions.unwrapType
 import com.expediagroup.graphql.generator.SchemaGenerator
 import com.expediagroup.graphql.generator.extensions.getGraphQLDescription
@@ -32,7 +33,7 @@ import graphql.schema.GraphQLTypeReference
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createType
 
-internal fun generateInterface(generator: SchemaGenerator, kClass: KClass<*>): GraphQLInterfaceType {
+internal fun <Context : GraphQLContext>generateInterface(generator: SchemaGenerator<Context>, kClass: KClass<*>): GraphQLInterfaceType {
     val builder = GraphQLInterfaceType.newInterface()
 
     builder.name(kClass.getSimpleName())
@@ -55,7 +56,7 @@ internal fun generateInterface(generator: SchemaGenerator, kClass: KClass<*>): G
         .forEach { builder.field(generateProperty(generator, it, kClass)) }
 
     kClass.getValidFunctions(generator.config.hooks)
-        .forEach { builder.field(generateFunction(generator, it, kClass.getSimpleName(), null, abstract = true)) }
+        .forEach { builder.field(generateFunction(generator, it, kClass.getSimpleName(), abstract = true)) }
 
     generator.classScanner.getSubTypesOf(kClass)
         .filter { generator.config.hooks.isValidAdditionalType(it, inputType = false) }

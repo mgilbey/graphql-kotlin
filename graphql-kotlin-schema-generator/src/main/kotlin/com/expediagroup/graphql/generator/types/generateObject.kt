@@ -16,6 +16,7 @@
 
 package com.expediagroup.graphql.generator.types
 
+import com.expediagroup.graphql.execution.GraphQLContext
 import com.expediagroup.graphql.extensions.unwrapType
 import com.expediagroup.graphql.generator.SchemaGenerator
 import com.expediagroup.graphql.generator.extensions.getGraphQLDescription
@@ -31,7 +32,7 @@ import graphql.schema.GraphQLTypeReference
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createType
 
-internal fun generateObject(generator: SchemaGenerator, kClass: KClass<*>): GraphQLObjectType {
+internal fun <Context : GraphQLContext>generateObject(generator: SchemaGenerator<Context>, kClass: KClass<*>): GraphQLObjectType {
     val builder = GraphQLObjectType.newObject()
 
     val name = kClass.getSimpleName()

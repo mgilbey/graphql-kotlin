@@ -16,6 +16,7 @@
 
 package com.expediagroup.graphql.generator.types
 
+import com.expediagroup.graphql.execution.GraphQLContext
 import com.expediagroup.graphql.generator.SchemaGenerator
 import com.expediagroup.graphql.generator.extensions.getKClass
 import com.expediagroup.graphql.generator.extensions.safeCast
@@ -27,7 +28,7 @@ import java.math.BigInteger
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
-internal fun generateScalar(generator: SchemaGenerator, type: KType): GraphQLScalarType? {
+internal fun <Context : GraphQLContext>generateScalar(generator: SchemaGenerator<Context>, type: KType): GraphQLScalarType? {
     val kClass: KClass<*> = type.getKClass()
     val scalar: GraphQLScalarType? = defaultScalarsMap[kClass]
 

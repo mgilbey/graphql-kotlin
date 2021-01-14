@@ -29,6 +29,7 @@ import com.expediagroup.graphql.examples.ktor.schema.models.User
 import com.expediagroup.graphql.examples.ktor.schema.models.batchBookLoader
 import com.expediagroup.graphql.examples.ktor.schema.models.batchCourseLoader
 import com.expediagroup.graphql.examples.ktor.schema.models.batchUniversityLoader
+import com.expediagroup.graphql.execution.GraphQLContext
 import com.expediagroup.graphql.toSchema
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -49,14 +50,14 @@ class GraphQLHandler {
     companion object {
         private val config = SchemaGeneratorConfig(supportedPackages = listOf("com.expediagroup.graphql.examples"))
         private val queries = listOf(
-            TopLevelObject(HelloQueryService()),
+            TopLevelObject<GraphQLContext>(HelloQueryService()),
             TopLevelObject(BookQueryService()),
             TopLevelObject(CourseQueryService()),
             TopLevelObject(UniversityQueryService())
         )
 
         private val mutations = listOf(
-            TopLevelObject(LoginMutationService())
+            TopLevelObject<GraphQLContext>(LoginMutationService())
         )
 
         private val graphQLSchema = toSchema(config, queries, mutations)

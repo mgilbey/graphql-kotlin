@@ -17,6 +17,7 @@
 package com.expediagroup.graphql.generator.types
 
 import com.expediagroup.graphql.exceptions.InvalidInputFieldTypeException
+import com.expediagroup.graphql.execution.GraphQLContext
 import com.expediagroup.graphql.generator.SchemaGenerator
 import com.expediagroup.graphql.generator.extensions.getGraphQLDescription
 import com.expediagroup.graphql.generator.extensions.getKClass
@@ -34,7 +35,7 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 
 @Throws(InvalidInputFieldTypeException::class)
-internal fun generateArgument(generator: SchemaGenerator, parameter: KParameter): GraphQLArgument {
+internal fun <Context : GraphQLContext>generateArgument(generator: SchemaGenerator<Context>, parameter: KParameter): GraphQLArgument {
 
     val inputTypeFromHooks = generator.config.hooks.willResolveInputMonad(parameter.type)
     val unwrappedType = inputTypeFromHooks.unwrapOptionalInputType()

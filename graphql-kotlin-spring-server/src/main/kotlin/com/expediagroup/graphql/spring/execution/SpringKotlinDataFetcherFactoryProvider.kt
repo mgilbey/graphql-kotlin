@@ -16,6 +16,7 @@
 
 package com.expediagroup.graphql.spring.execution
 
+import com.expediagroup.graphql.execution.GraphQLContext
 import com.expediagroup.graphql.execution.SimpleKotlinDataFetcherFactoryProvider
 import com.fasterxml.jackson.databind.ObjectMapper
 import graphql.schema.DataFetcherFactory
@@ -30,6 +31,6 @@ class SpringKotlinDataFetcherFactoryProvider(
     private val objectMapper: ObjectMapper,
     private val applicationContext: ApplicationContext
 ) : SimpleKotlinDataFetcherFactoryProvider(objectMapper) {
-    override fun functionDataFetcherFactory(target: Any?, kFunction: KFunction<*>): DataFetcherFactory<Any?> =
+    override fun <Context : GraphQLContext>functionDataFetcherFactory(target: (context: Context) -> Any?, kFunction: KFunction<*>): DataFetcherFactory<Any?> =
         DataFetcherFactory { SpringDataFetcher(target, kFunction, objectMapper, applicationContext) }
 }

@@ -17,6 +17,7 @@
 package com.expediagroup.graphql.spring.execution
 
 import com.expediagroup.graphql.execution.FunctionDataFetcher
+import com.expediagroup.graphql.execution.GraphQLContext
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import graphql.schema.DataFetchingEnvironment
@@ -32,12 +33,12 @@ import kotlin.reflect.jvm.javaType
 /**
  * Spring aware function data fetcher that automatically autowires Spring beans as function parameters.
  */
-open class SpringDataFetcher(
-    target: Any?,
+open class SpringDataFetcher<Context : GraphQLContext>(
+    target: (context: Context) -> Any?,
     fn: KFunction<*>,
     objectMapper: ObjectMapper = jacksonObjectMapper(),
     private val applicationContext: ApplicationContext
-) : FunctionDataFetcher(target, fn, objectMapper) {
+) : FunctionDataFetcher<Context>(target, fn, objectMapper) {
 
     @ExperimentalStdlibApi
     override fun mapParameterToValue(param: KParameter, environment: DataFetchingEnvironment): Pair<KParameter, Any?>? =

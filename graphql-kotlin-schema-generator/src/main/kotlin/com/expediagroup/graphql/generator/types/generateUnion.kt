@@ -16,6 +16,7 @@
 
 package com.expediagroup.graphql.generator.types
 
+import com.expediagroup.graphql.execution.GraphQLContext
 import com.expediagroup.graphql.extensions.unwrapType
 import com.expediagroup.graphql.generator.SchemaGenerator
 import com.expediagroup.graphql.generator.extensions.getGraphQLDescription
@@ -29,7 +30,7 @@ import graphql.schema.GraphQLUnionType
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createType
 
-internal fun generateUnion(generator: SchemaGenerator, kClass: KClass<*>): GraphQLUnionType {
+internal fun <Context : GraphQLContext>generateUnion(generator: SchemaGenerator<Context>, kClass: KClass<*>): GraphQLUnionType {
     val builder = GraphQLUnionType.newUnionType()
     builder.name(kClass.getSimpleName())
     builder.description(kClass.getGraphQLDescription())

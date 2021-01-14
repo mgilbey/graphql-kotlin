@@ -19,13 +19,14 @@ package com.expediagroup.graphql.generator.types
 import com.expediagroup.graphql.TopLevelObject
 import com.expediagroup.graphql.exceptions.ConflictingFieldsException
 import com.expediagroup.graphql.exceptions.InvalidSubscriptionTypeException
+import com.expediagroup.graphql.execution.GraphQLContext
 import com.expediagroup.graphql.generator.SchemaGenerator
 import com.expediagroup.graphql.generator.extensions.getValidFunctions
 import com.expediagroup.graphql.generator.extensions.isNotPublic
 import graphql.introspection.Introspection.DirectiveLocation
 import graphql.schema.GraphQLObjectType
 
-internal fun generateSubscriptions(generator: SchemaGenerator, subscriptions: List<TopLevelObject>): GraphQLObjectType? {
+internal fun <Context : GraphQLContext>generateSubscriptions(generator: SchemaGenerator<Context>, subscriptions: List<TopLevelObject<Context>>): GraphQLObjectType? {
     if (subscriptions.isEmpty()) {
         return null
     }
@@ -50,7 +51,7 @@ internal fun generateSubscriptions(generator: SchemaGenerator, subscriptions: Li
                     throw InvalidSubscriptionTypeException(kClass, it)
                 }
 
-                val function = generateFunction(generator, it, generator.config.topLevelNames.subscription, subscription.obj)
+                val function = generateFunction(generator, it, generator.config.topLevelNames.subscription, subscription::getTarget)
                 val functionFromHook = generator.config.hooks.didGenerateSubscriptionField(kClass, it, function)
                 if (subscriptionBuilder.hasField(functionFromHook.name)) {
                     throw ConflictingFieldsException("Subscription(class: ${subscription.kClass})", it.name)
